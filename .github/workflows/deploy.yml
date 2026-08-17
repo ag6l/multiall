@@ -22,9 +22,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # No pinned version: pnpm-workspace.yaml uses settings (allowBuilds) that
-      # older pnpm releases (e.g. 9) neither understand nor tolerate — pnpm 9
-      # fails outright on a workspace file with no "packages" key at all.
+      # Version comes from package.json's "packageManager" field, not a pin
+      # here: pnpm-workspace.yaml uses settings (allowBuilds) that older pnpm
+      # releases (e.g. 9) neither understand nor tolerate — pnpm 9 fails
+      # outright on a workspace file with no "packages" key at all.
       - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
