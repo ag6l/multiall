@@ -1,0 +1,91 @@
+/* ==========================================================================
+   Global styles: fonts, resets, base elements, and layout primitives.
+   ========================================================================== */
+
+/* --- Fonts --- */
+
+/* Self-hosted color emoji (weather icons): system emoji fonts render flat
+   B&W glyphs on some Linux setups, so this pins a consistent colorful look
+   everywhere. Split into unicode-range chunks upstream, so only the chunk
+   actually covering the glyphs in use gets downloaded. */
+@import '@infolektuell/noto-color-emoji';
+
+@font-face {
+  font-family: 'DM Sans'; font-style: normal; font-weight: 400 700; font-display: swap;
+  src: url('../assets/fonts/dm-sans-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk'; font-style: normal; font-weight: 500 700; font-display: swap;
+  src: url('../assets/fonts/space-grotesk-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Symbols Nerd Font'; font-style: normal; font-weight: 400; font-display: block;
+  src: url('../assets/fonts/symbols-nerd-font.woff') format('woff');
+}
+
+/* --- Resets --- */
+
+* { box-sizing: border-box; }
+body {
+  min-width: 320px; min-height: 100vh; margin: 0; overflow-x: hidden;
+  background: #000;
+}
+button,input,textarea { font: inherit; }
+button,a { -webkit-tap-highlight-color: transparent; }
+h1,h2 { font-family: 'Space Grotesk',sans-serif; }
+
+/* --- Layout --- */
+
+main { position: relative; z-index: 1; width: min(1260px,calc(100% - 28px)); margin: 0 auto; padding: 18px 0 48px; }
+.hero { text-align: center; }
+
+/* --- Decorative background --- */
+
+/* Three ambient lights over a pure black canvas, each on its own long loop so
+   the motion never repeats in lockstep. `transform` only, to stay on the
+   compositor — animating `top`/`left` would relayout the page every frame. */
+.page-glow {
+  position: fixed; z-index: 0; width: 24rem; height: 24rem; border-radius: 50%;
+  filter: blur(130px); opacity: .2; pointer-events: none; will-change: transform;
+  &.glow-one { top: 12%; right: -8rem; background: #3fb950; animation: glow-drift-one 34s ease-in-out infinite; }
+  &.glow-two { bottom: 0; left: -10rem; background: #2797a8; animation: glow-drift-two 46s ease-in-out infinite; }
+  &.glow-three { top: 45%; left: 30%; background: #6f42c1; animation: glow-drift-three 58s ease-in-out infinite; }
+}
+.svg-filters { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+.custom-background,.background-shade { position: fixed; inset: 0; z-index: 0; pointer-events: none; view-transition-name: none; }
+.custom-background { background-position: center; background-size: cover; background-repeat: no-repeat; }
+.background-shade { background: #010409; }
+
+/* --- Typography --- */
+
+.eyebrow,.section-kicker { color: var(--accent-strong); font-size: .74rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+.eyebrow { margin: 28px 0 5px; }
+h1 {
+  margin: 0; font-size: clamp(3.5rem,9vw,6.6rem); line-height: .9; letter-spacing: -.075em;
+  & span { color: var(--accent-strong); }
+}
+.welcome { margin: 14px auto 0; color: var(--muted); font-size: clamp(.92rem,1.7vw,1.08rem); }
+.time-note { margin: 9px auto 0; color: var(--accent-strong); font-size: .86rem; font-weight: 600; opacity: .88; }
+.ambient-info {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 7px;
+  margin: 11px auto 0; color: var(--muted); font-size: 1.02rem; font-variant-numeric: tabular-nums;
+  & time { color: var(--accent-strong); font-family: 'Space Grotesk',sans-serif; font-size: 1.15rem; font-weight: 700; letter-spacing: .025em; }
+  & .ambient-separator { opacity: .5; }
+  & .ambient-weather-icon { font-family: 'Noto Color Emoji', sans-serif; }
+  & a,& button { border: 0; padding: 0; color: inherit; background: transparent; text-decoration: none; cursor: pointer; }
+  & a:hover,& button:hover { color: var(--accent-strong); }
+}
+
+/* --- Sections --- */
+
+.services,.utilities { margin-top: 26px; }
+.section-heading {
+  display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 14px;
+  & .section-kicker { margin: 0 0 5px; }
+  & h2 { margin: 0; font-size: clamp(1.35rem,2.3vw,1.8rem); letter-spacing: -.04em; }
+  &>span { color: var(--muted); font-size: .83rem; }
+}
+.utilities { padding-top: 24px; border-top: 1px solid var(--line); }
+.utility-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+
+footer { margin-top: 38px; color: #52685b; font-size: .78rem; text-align: center; }

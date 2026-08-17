@@ -1,0 +1,60 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deploy in flight at a time; a superseded run is cancelled rather
+# than left to fight over the same Pages deployment.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # No pinned version: pnpm-workspace.yaml uses settings (allowBuilds) that
+      # older pnpm releases (e.g. 9) neither understand nor tolerate — pnpm 9
+      # fails outright on a workspace file with no "packages" key at all.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm run test
+
+      - run: pnpm run icons
+
+      - name: Build
+        env:
+          # Project sites (anything but <owner>.github.io) are served from
+          # /<repo>/, so absolute asset paths need that prefix baked in.
+          BASE_PATH: /${{ github.event.repository.name }}/
+        run: pnpm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

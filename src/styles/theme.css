@@ -1,0 +1,82 @@
+/* ==========================================================================
+   Theme: design tokens (custom properties) and light/dark mode overrides.
+   ========================================================================== */
+
+:root {
+  view-transition-name: none; color-scheme: dark; color: #e6edf3; background: #0d1117;
+  font-family: 'DM Sans', system-ui, sans-serif; font-synthesis: none;
+
+  /* --- Design tokens (dark: GitHub-style near-black canvas) --- */
+  --surface: rgba(22, 27, 34, .76);
+  --surface-strong: #161b22;
+  --line: rgba(240, 246, 252, .1);
+  --muted: #8b949e;
+  --accent: #3fb950;
+  --accent-strong: #56d364;
+  --input-surface: #0d1117;
+
+  /* --- Light theme --- */
+  &[data-theme='light'] {
+    color-scheme: light; color: #14231a; background: #eef6f0;
+    --surface: rgba(255, 255, 255, .78);
+    --surface-strong: #fff;
+    --line: rgba(28, 65, 42, .16);
+    --muted: #587061;
+    --accent: #8be6ae;
+    --accent-strong: #16864a;
+    --input-surface: #fff;
+
+    & body { background: radial-gradient(circle at 20% -10%, rgba(89,201,132,.24), transparent 34rem), linear-gradient(160deg,#f4faf5,#e7f1ea); }
+    & .welcome, & .section-heading>span, & .search-help, & .tools-panel p { color: #587061; }
+    & .tools-menu summary, & .settings-trigger, & .settings-controls .automation-panel { background: rgba(255,255,255,.82); }
+    & .search .query-editor, & .service-card { color: #14231a; }
+    & .search .query-editor { caret-color: #14231a; }
+    & .search .inline-search-operator { background: rgba(20,35,26,.13); box-shadow: inset 0 0 0 1px rgba(20,35,26,.24),0 0 0 3px rgba(20,35,26,.13); }
+    & .search .inline-search-operator.filter { background: transparent; box-shadow: none; }
+    & .search .inline-search-operator.include, & .search .inline-search-operator.exclude { background: transparent; box-shadow: none; }
+    & .search .inline-search-operator.exact { background: rgba(20,35,26,.16); box-shadow: inset 0 0 0 1px rgba(20,35,26,.25),0 0 0 3px rgba(20,35,26,.16); }
+    & .active-search-guide code { color: #163b25; }
+    & .active-search-guide .guide-history { color: #294c35; }
+    & .active-search-guide .guide-syntax { background: rgba(20,35,26,.08); box-shadow: inset 0 0 0 1px rgba(20,35,26,.14); }
+    & .search .markdown-code { color: #795300; background: rgba(121,83,0,.1); box-shadow: 0 0 0 2px rgba(121,83,0,.1); }
+    & .search .markdown-strong, & .search .markdown-emphasis, & .search .markdown-link { color: #096fa8; }
+    & .search .markdown-heading { color: #8b5900; }
+    & .search .markdown-quote { color: #684da0; }
+    & .search .markdown-list { color: #14783d; }
+    & .search .hl-operator, & .search .hl-filter { color: #096fa8; }
+    & .search .hl-include { color: #14783d; }
+    & .search .hl-exclude { color: #c92a2a; }
+    & .search .hl-exact { color: #14231a; text-decoration-color: rgba(20,35,26,.4); }
+    & .search .hl-md-code { color: #795300; }
+    & .search .hl-md-strong, & .search .hl-md-emphasis, & .search .hl-md-link { color: #096fa8; }
+    & .search .hl-md-heading { color: #8b5900; }
+    & .search .hl-md-quote { color: #684da0; }
+    & .search .hl-md-list { color: #14783d; }
+    & .search .inline-search-operator.include { color: #14783d; }
+    & .search .inline-search-operator.exclude { color: #c92a2a; }
+    & .search .search-keyword { color: #096fa8; }
+    & .search .bang-chip, & .search .bang-options-chip { background: #fff; color: #14231a; box-shadow: inset 0 0 0 1px rgba(20,35,26,.14); }
+    /* Must be at least as specific as the rule above, which would otherwise
+       repaint the background of a selected chip. */
+    & .search .bang-chip.is-selected, & .search .bang-options-chip.is-selected, & .search .bang-deco.is-selected {
+      background: rgba(9,105,218,.5); box-shadow: inset 0 0 0 1px rgba(20,35,26,.28);
+    }
+    & .search .active-icon-shell, & .service-card .icon-shell { background: #fff; box-shadow: inset 0 0 0 1px rgba(20,35,26,.1); }
+    & .search .active-icon-initials { color: #14231a; }
+    & .service-card .initials { color: #14231a; }
+    & .bang-chip { background: #fff; box-shadow: inset 0 0 0 1px rgba(20,35,26,.12); }
+    & .bang-chip-initials { color: #14231a; }
+    & .bang-options-chip { color: #14231a; background: rgba(20,35,26,.08); border-color: rgba(20,35,26,.18); }
+    & .search-keyword { color: #096fa8; }
+    & .search .hl-math-function { color: #096fa8; }
+    & .search .hl-math-constant { color: #684da0; }
+    & .search .hl-math-number { color: #8b5900; }
+    & .search .hl-math-operator { color: #b3246b; }
+    & .search .hl-math-bracket { color: #14783d; }
+    & .search .hl-math-symbol { color: #14231a; }
+    & .quick-answer-value { color: #14231a; }
+    & .tools-panel { background: #f7fbf8; & a { color: #243b2c; } }
+    & footer { color: #6c8072; }
+    & .background-shade { background: #fff; }
+  }
+}
