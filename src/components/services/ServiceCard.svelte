@@ -20,7 +20,10 @@
     event.preventDefault();
     onclick(service, true);
   }}
-  aria-label={query.trim() ? `${text.searchIn} “${query.trim()}” — ${service.name}${service.bang ? ` (${service.bang})` : ''}` : `${text.open} ${service.name}`}
+  aria-label={service.bang
+    ? `${text.useBang} ${service.name} (${service.bang})`
+    : (query.trim() ? `${text.searchIn} “${query.trim()}” — ${service.name}` : `${text.open} ${service.name}`)}
+  title={service.bang ? text.middleClickOpen : undefined}
 >
   <span class="icon-shell">
     {#if service.icon?.symbol}

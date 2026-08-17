@@ -203,7 +203,7 @@ export function deleteEnd(value, pos, inputType = 'deleteContentForward') {
  * Computes the next bang when cycling with Tab over a partially typed token.
  * @returns {{prefix:string, index:number, value:string}|null}
  */
-export function cycleBang(state, currentToken, bangs, reverse = false) {
+export function cycleBang(state, currentToken, bangs, reverse = false, step = 1) {
   const prefix = state.active ? state.prefix : currentToken;
   const matches = bangs.filter((b) => b?.toLowerCase().startsWith(prefix.toLowerCase()));
   if (!matches.length) return null;
@@ -213,7 +213,10 @@ export function cycleBang(state, currentToken, bangs, reverse = false) {
     const exact = matches.findIndex((b) => b.toLowerCase() === currentToken.toLowerCase());
     index = reverse ? (exact > 0 ? exact - 1 : matches.length - 1) : (exact >= 0 ? exact : 0);
   } else {
-    index = (state.index + (reverse ? -1 : 1) + matches.length) % matches.length;
+    // `step` is the grid's column count when moving by rows, so it can exceed
+    // the list length; the double modulo keeps the result positive either way.
+    const delta = reverse ? -step : step;
+    index = ((state.index + delta) % matches.length + matches.length) % matches.length;
   }
   return { prefix, index, value: matches[index] };
 }

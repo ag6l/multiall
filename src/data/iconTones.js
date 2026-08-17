@@ -53,6 +53,8 @@ export const iconTones = {
   'multiall-skillshare': 'light',
   'multiall-datacamp': 'light',
   'multiall-minds': 'light',
+  'multiall-tapas': 'light',
+  'multiall-farfetch': 'dark',
   'multiall-aol': 'dark',
   'aiforall-grok': 'dark',
   'multiall-wikipedia': 'dark',

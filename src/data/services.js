@@ -293,6 +293,30 @@ export const services = [
   { name: 'AnimeAV1', bang: '!av1', category: 'Video', scope: ['Search'], search: 'https://animeav1.com/catalogo?search=', icon: {} },
   { name: 'Mercado Libre', bang: '!ml', category: 'Web', scope: ['Search'], search: 'https://listado.mercadolibre.com.ar/', icon: {} },
 
+  // Reading, gaming, shopping, community, media and reference (batch 6).
+  { name: 'Webtoon', bang: '!wt2', category: 'Publicaciones', scope: ['Search'], search: 'https://www.webtoons.com/en/search?keyword=', icon: { symbol: 'multiall-webtoon', raster: false } },
+  { name: 'Tapas', bang: '!tap', category: 'Publicaciones', scope: ['Search'], search: 'https://tapas.io/search?q=', icon: { symbol: 'multiall-tapas', raster: false } },
+  { name: 'Wattpad', bang: '!wat', category: 'Publicaciones', scope: ['Search'], search: 'https://www.wattpad.com/search/', icon: { symbol: 'multiall-wattpad', raster: false } },
+  { name: 'Fur Affinity', bang: '!fa2', category: 'Imágenes', scope: ['Search'], search: 'https://www.furaffinity.net/search/?q=', icon: { symbol: 'multiall-furaffinity', raster: false } },
+  { name: 'Weasyl', bang: '!wea', category: 'Imágenes', scope: ['Search'], search: 'https://www.weasyl.com/search?q=', icon: { symbol: 'multiall-weasyl', raster: false } },
+  { name: 'Newgrounds', bang: '!ng2', category: 'Juegos', scope: ['Search'], search: 'https://www.newgrounds.com/search/conduct/movies?terms=', icon: { symbol: 'multiall-newgrounds', raster: false } },
+  { name: 'OpenCritic', bang: '!oc', category: 'Juegos', scope: ['Search'], search: 'https://opencritic.com/search?criteria=', icon: { symbol: 'multiall-opencritic', raster: false } },
+  { name: 'Humble Bundle', bang: '!hb', category: 'Juegos', scope: ['Search'], search: 'https://www.humblebundle.com/store/search?search=', icon: { symbol: 'multiall-humblebundle', raster: false } },
+  { name: 'Wish', bang: '!wsh', category: 'Web', scope: ['Search'], search: 'https://www.wish.com/search/', icon: { symbol: 'multiall-wish', raster: false } },
+  { name: 'Shopee', bang: '!shp', category: 'Web', scope: ['Search'], search: 'https://shopee.com/search?keyword=', icon: { symbol: 'multiall-shopee', raster: false } },
+  { name: 'Zalando', bang: '!zln', category: 'Web', scope: ['Search'], search: 'https://www.zalando.com/catalog/?q=', icon: { symbol: 'multiall-zalando', raster: false } },
+  { name: 'Farfetch', bang: '!ffh', category: 'Web', scope: ['Search'], search: 'https://www.farfetch.com/shopping/search/items.aspx?q=', icon: { symbol: 'multiall-farfetch', raster: false } },
+  { name: 'StockX', bang: '!skx', category: 'Web', scope: ['Search'], search: 'https://stockx.com/search/sneakers?s=', icon: { symbol: 'multiall-stockx', raster: false } },
+  { name: 'Nextdoor', bang: '!ndr', category: 'Social', scope: ['Search'], search: 'https://nextdoor.com/search/posts/?query=', icon: { symbol: 'multiall-nextdoor', raster: false } },
+  { name: 'Meetup', bang: '!meet', category: 'Comunidades', scope: ['Search'], search: 'https://www.meetup.com/find/?keywords=', icon: { symbol: 'multiall-meetup', raster: false } },
+  { name: 'Ticketmaster', bang: '!tm', category: 'Web', scope: ['Search'], search: 'https://www.ticketmaster.com/search?q=', icon: { symbol: 'multiall-ticketmaster', raster: false } },
+  { name: 'Pandora', bang: '!pan', category: 'Música', scope: ['Search'], search: 'https://www.pandora.com/search/', icon: { symbol: 'multiall-pandora', raster: false } },
+  { name: 'iHeartRadio', bang: '!ihr', category: 'Música', scope: ['Search'], search: 'https://www.iheart.com/search/?q=', icon: { symbol: 'multiall-iheartradio', raster: false } },
+  { name: 'Waze', bang: '!wz', category: 'Web', scope: ['Search'], search: 'https://www.waze.com/live-map/directions?q=', icon: { symbol: 'multiall-waze', raster: false } },
+  { name: 'Crunchbase', bang: '!cbb', category: 'Conocimiento', scope: ['Search'], search: 'https://www.crunchbase.com/textsearch?q=', icon: { symbol: 'multiall-crunchbase', raster: false } },
+  { name: 'Wikiquote', bang: '!wq', category: 'Conocimiento', scope: ['Search'], search: 'https://en.wikiquote.org/w/index.php?search=', icon: { symbol: 'multiall-wikiquote', raster: false } },
+  { name: 'Chess.com', bang: '!chs', category: 'Juegos', scope: ['Search'], search: 'https://www.chess.com/search?q=', icon: { symbol: 'multiall-chessdotcom', raster: false } },
+
   // --- Utilidades (chat apps, shown outside the main grid) ---
   { name: 'WhatsApp', bang: '!wsp', category: 'Utilidades', scope: ['Utilidades'], search: 'https://web.whatsapp.com/', icon: { symbol: 'multiall-whatsapp', raster: false } },
   { name: 'Telegram', bang: '!tg', category: 'Utilidades', scope: ['Utilidades'], search: 'https://web.telegram.org/', icon: { symbol: 'multiall-telegram', raster: false } }

@@ -1390,6 +1390,94 @@ const serviceFacts = {
   'Mercado Libre': {
     es: ['Mercado Libre se fundó en Argentina en 1999.', 'Es el mayor mercado de comercio electrónico de América Latina.'],
     en: ['Mercado Libre was founded in Argentina in 1999.', "It is Latin America's largest e-commerce marketplace."]
+  },
+  Webtoon: {
+    es: ['Webtoon lo lanzó Naver en Corea del Sur en 2004.', 'Publica cómics digitales en formato de desplazamiento vertical.'],
+    en: ['Webtoon was launched by Naver in South Korea in 2004.', 'It publishes digital comics in a vertical-scroll format.']
+  },
+  Tapas: {
+    es: ['Tapas se fundó en 2012 como plataforma de cómics digitales.', 'Reúne webcómics y novelas cortas de creadores independientes.'],
+    en: ['Tapas was founded in 2012 as a digital comics platform.', 'It gathers webcomics and short fiction from independent creators.']
+  },
+  Wattpad: {
+    es: ['Wattpad se fundó en Canadá en 2006.', 'Es una comunidad de lectura y escritura de ficción por capítulos.'],
+    en: ['Wattpad was founded in Canada in 2006.', 'It is a reading and writing community for chapter-based fiction.']
+  },
+  'Fur Affinity': {
+    es: ['Fur Affinity se lanzó en 2005.', 'Es una de las comunidades de arte furry más grandes y antiguas.'],
+    en: ['Fur Affinity launched in 2005.', 'It is one of the largest and oldest furry art communities.']
+  },
+  Weasyl: {
+    es: ['Weasyl se lanzó en 2011.', 'Es una comunidad de arte que también admite escritura y música.'],
+    en: ['Weasyl launched in 2011.', 'It is an art community that also supports writing and music.']
+  },
+  Newgrounds: {
+    es: ['Newgrounds se fundó en 1995.', 'Es un archivo veterano de animación Flash, juegos y música independientes.'],
+    en: ['Newgrounds was founded in 1995.', 'It is a longtime archive of independent Flash animation, games, and music.']
+  },
+  OpenCritic: {
+    es: ['OpenCritic se lanzó en 2015.', 'Agrega reseñas de videojuegos en una puntuación de consenso.'],
+    en: ['OpenCritic launched in 2015.', 'It aggregates video game reviews into a consensus score.']
+  },
+  'Humble Bundle': {
+    es: ['Humble Bundle se fundó en 2010.', 'Vende paquetes de videojuegos y dona parte de lo recaudado a caridad.'],
+    en: ['Humble Bundle was founded in 2010.', 'It sells game bundles and donates part of the proceeds to charity.']
+  },
+  Wish: {
+    es: ['Wish se lanzó en 2011.', 'Es un mercado de comercio electrónico con precios bajos y envío internacional.'],
+    en: ['Wish launched in 2011.', 'It is an e-commerce marketplace known for low prices and international shipping.']
+  },
+  Shopee: {
+    es: ['Shopee se lanzó en Singapur en 2015.', 'Es uno de los mercados de comercio electrónico líderes en el Sudeste Asiático.'],
+    en: ['Shopee launched in Singapore in 2015.', 'It is one of the leading e-commerce marketplaces in Southeast Asia.']
+  },
+  Zalando: {
+    es: ['Zalando se fundó en Alemania en 2008.', 'Es uno de los mayores minoristas de moda en línea de Europa.'],
+    en: ['Zalando was founded in Germany in 2008.', "It is one of Europe's largest online fashion retailers."]
+  },
+  Farfetch: {
+    es: ['Farfetch se fundó en Portugal en 2007.', 'Vende moda de lujo conectando boutiques de todo el mundo.'],
+    en: ['Farfetch was founded in Portugal in 2007.', 'It sells luxury fashion by connecting boutiques worldwide.']
+  },
+  StockX: {
+    es: ['StockX se fundó en 2015.', 'Es un mercado de reventa de zapatillas, ropa y coleccionables al estilo bursátil.'],
+    en: ['StockX was founded in 2015.', 'It is a stock-market-style resale marketplace for sneakers, apparel, and collectibles.']
+  },
+  Nextdoor: {
+    es: ['Nextdoor se lanzó en 2011.', 'Es una red social organizada por barrios y comunidades locales.'],
+    en: ['Nextdoor launched in 2011.', 'It is a social network organized around neighborhoods and local communities.']
+  },
+  Meetup: {
+    es: ['Meetup se fundó en 2002.', 'Ayuda a organizar y encontrar eventos presenciales por interés compartido.'],
+    en: ['Meetup was founded in 2002.', 'It helps organize and find in-person events around shared interests.']
+  },
+  Ticketmaster: {
+    es: ['Ticketmaster se fundó en 1976.', 'Es una de las plataformas de venta de entradas más grandes del mundo.'],
+    en: ['Ticketmaster was founded in 1976.', 'It is one of the largest ticket-selling platforms in the world.']
+  },
+  Pandora: {
+    es: ['Pandora se lanzó en 2000 en Estados Unidos.', 'Es un servicio de radio por internet basado en estaciones personalizadas.'],
+    en: ['Pandora launched in 2000 in the United States.', 'It is an internet radio service built around personalized stations.']
+  },
+  iHeartRadio: {
+    es: ['iHeartRadio se lanzó en 2008.', 'Reúne estaciones de radio en vivo y podcasts en una sola app.'],
+    en: ['iHeartRadio launched in 2008.', 'It gathers live radio stations and podcasts in one app.']
+  },
+  Waze: {
+    es: ['Waze se fundó en Israel en 2006 y fue adquirida por Google en 2013.', 'Usa reportes de la comunidad para calcular rutas en tiempo real.'],
+    en: ['Waze was founded in Israel in 2006 and acquired by Google in 2013.', 'It uses community reports to calculate routes in real time.']
+  },
+  Crunchbase: {
+    es: ['Crunchbase se lanzó en 2007.', 'Reúne datos sobre empresas, inversiones y financiación de startups.'],
+    en: ['Crunchbase launched in 2007.', 'It gathers data on companies, investments, and startup funding.']
+  },
+  Wikiquote: {
+    es: ['Wikiquote se lanzó en 2003.', 'Reúne citas notables organizadas por persona, obra o tema.'],
+    en: ['Wikiquote launched in 2003.', 'It gathers notable quotations organized by person, work, or topic.']
+  },
+  'Chess.com': {
+    es: ['Chess.com se fundó en 2005.', 'Es una de las plataformas de ajedrez en línea más grandes, con partidas y lecciones.'],
+    en: ['Chess.com was founded in 2005.', 'It is one of the largest online chess platforms, with games and lessons.']
   }
 };
 

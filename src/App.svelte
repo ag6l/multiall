@@ -12,6 +12,7 @@
   import { services, toolLinks } from './data/services.js';
   import { copyFor } from './lib/i18n.js';
   import { formatLocalDateTime, timeGreeting } from './lib/search.js';
+  import { parseBangValue, withoutBang } from './lib/bang/manager.js';
   import { describeForecast } from './lib/weather.js';
   import { applyTheme } from './lib/preferences.js';
 
@@ -53,6 +54,10 @@
   const defaultSearchers = services.filter((item) => item.search).sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
   const allDestinations = [...displayedServices, ...utilityServices];
 
+  // A service is filterable by any of its scopes or by its category, matching
+  // how the grid builds its filter chips.
+  const tagsOf = (item) => [...item.scope, item.category];
+
   // --- Reactive proxies from stores ---
   // We use getter-based $derived to keep template reactive while stores own the state.
 
@@ -72,6 +77,12 @@
   const aiAutomation = $derived(getAiAutomation());
   const weatherLoading = $derived(getWeatherLoading());
   const weatherNeedsLocation = $derived(getWeatherNeedsLocation());
+  // Bang cycling walks the same set the grid is showing, so an active category
+  // filter narrows Tab/arrow candidates too instead of jumping to hidden cards.
+  const cycleServices = $derived(selectedCategory === 'Todos'
+    ? allDestinations
+    : allDestinations.filter((item) => tagsOf(item).includes(selectedCategory))
+  );
 
   /** Consulting the weather is the moment geolocation may be requested. */
   function consultWeather() {
@@ -91,8 +102,11 @@
   // userscript through the URL fragment.
   let attachmentPayload = $state([]);
   // Bang being typed or edited, so the grid can show its candidates.
-  let bangDraft = $state({ prefix: '', current: '' });
+  let bangDraft = $state({ prefix: '', current: '', cycling: false });
   let selectedCategory = $state(getSelectedCategory());
+  // Column count reported by the grid, so the search bar can step the bang
+  // selection by a whole row when the vertical arrows are used.
+  let gridColumns = $state(1);
 
   $effect(() => { setQuery(query); });
   $effect(() => { setActiveBang(activeBang); });
@@ -170,7 +184,23 @@
     });
   }
 
+  /**
+   * A plain click on a card writes (or swaps) that service's bang into the
+   * search bar instead of navigating away immediately — clicking around the
+   * grid should feel like picking a destination, not leaving the page. The
+   * query text after the bang is preserved, so switching destinations keeps
+   * whatever was already typed. Middle-click still opens directly: it is a
+   * deliberate "open in a new tab" gesture, not an exploratory click.
+   */
   function selectService(service, forceNewTab = false) {
+    if (!forceNewTab && service.bang) {
+      const request = bangRequest(allDestinations);
+      const currentQuery = request ? request.query : withoutBang(query);
+      query = currentQuery ? `${service.bang} ${currentQuery}` : `${service.bang} `;
+      focusSearch();
+      return;
+    }
+
     const request = bangRequest(allDestinations);
     recordQuery(query);
     visitSelectedService(request?.service ?? service, request?.query ?? query, {
@@ -182,7 +212,26 @@
   }
 
   function searchDefault() {
+    // Enter on a bang that has not been committed yet completes it instead of
+    // searching. `parseBangValue` reports phase 'typing' for "!g" (no trailing
+    // space), and in that phase `state.query` is still the whole value — bang
+    // included — so letting it through would search the literal "!g". A known
+    // bang gains its trailing space, which turns it into the icon chip; an
+    // unknown one does nothing at all.
+    const bare = query.trim();
+    if (/^![a-z0-9]*(?:\[[^\]]*\])?$/i.test(bare)) {
+      if (parseBangValue(bare, allDestinations).service) query = `${bare} `;
+      return;
+    }
+
     const request = bangRequest(allDestinations);
+    // A value that looks like a bang attempt ("!abc", "!abc some text") but
+    // never resolved to a known service must not fall through to searching
+    // that literal text — including the "!" — on the default engine. Enter is
+    // a no-op until the bang is either completed or abandoned. This only
+    // matches the unresolved case: a working bang leaves `request` non-null
+    // and is handled below regardless of this check.
+    if (!request && /^![a-z0-9]+/i.test(query.trim())) return;
     // Submitting with no search terms must do nothing: pressing Enter (or the
     // submit button) on an empty field should not open a service home page.
     // Opening a home page stays available by clicking a service card.
@@ -295,6 +344,8 @@
       bind:value={query}
       history={queryHistory}
       allServices={allDestinations}
+      {cycleServices}
+      bangColumns={gridColumns}
       language={preferences.language}
       onbangchange={(bang, service) => { activeBang = bang; activeServiceFromBang = service; }}
       onhistoryremove={removeHistoryEntry}
@@ -324,6 +375,8 @@
       onselect={selectService}
       bangToken={bangDraft.prefix}
       bangCurrent={bangDraft.current}
+      bangCycling={bangDraft.cycling}
+      oncolumns={(count) => (gridColumns = count)}
       bind:selectedCategory
       showFilters
     />

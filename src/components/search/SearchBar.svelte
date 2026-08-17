@@ -19,6 +19,13 @@
     value = $bindable(),
     history = [],
     allServices = [],
+    // The set Tab/arrows walk. Defaults to `allServices`, but the app narrows it
+    // to the active category filter so cycling matches what the grid shows.
+    // Bang *resolution* still uses the full `allServices`, so a filtered-out
+    // bang typed by hand still renders its chip.
+    cycleServices = null,
+    // Grid column count, so the vertical arrows can step by a whole row.
+    bangColumns = 1,
     onbangchange,
     onhistoryremove,
     onsubmit,
@@ -114,7 +121,9 @@
   const bangDraftPrefix = $derived(
     bangCycle.active && bangDraftCurrent ? bangCycle.prefix : bangDraftCurrent
   );
-  $effect(() => { onbangdraft?.({ prefix: bangDraftPrefix, current: bangDraftCurrent }); });
+  $effect(() => {
+    onbangdraft?.({ prefix: bangDraftPrefix, current: bangDraftCurrent, cycling: bangCycle.active });
+  });
 
   const querySegments = $derived(tokenizeQuery(queryText, service));
   // Segment ranges in query space, so a segment can tell whether the caret is
@@ -737,10 +746,15 @@
     // nothing but a bang token all four are free. When a bang is being edited in
     // front of a query only the vertical pair is, since Left/Right still have to
     // move the caret through the bang text.
+    //
+    // Left/Right step one card like Tab; Up/Down step a whole row, so they move
+    // vertically through the grid as the arrows imply rather than just repeating
+    // Tab's behaviour.
     const arrowStep = BANG_ARROW_STEP[event.key];
     if (arrowStep !== undefined && !event.shiftKey && !mod && !event.altKey) {
       const vertical = event.key === 'ArrowUp' || event.key === 'ArrowDown';
-      if (tryBangCycle(arrowStep < 0, !vertical)) {
+      const step = vertical ? Math.max(1, bangColumns) : 1;
+      if (tryBangCycle(arrowStep < 0, !vertical, step)) {
         event.preventDefault();
         return;
       }
@@ -853,7 +867,7 @@
    *   token. The arrows pass this: while a bang is being edited with a query
    *   after it, the arrows have to keep moving the caret through that text.
    */
-  function tryBangCycle(reverse, tokenOnly = false) {
+  function tryBangCycle(reverse, tokenOnly = false, step = 1) {
     // Two cases cycle: the whole value is a bang token still being typed ("!g"),
     // or a committed bang is open for editing, where only the leading token is
     // cycled and the query after it is preserved.
@@ -865,8 +879,8 @@
       return false;
     }
 
-    const available = allServices.map((item) => item.bang).filter(Boolean);
-    const result = cycleBang(bangCycle, token, available, reverse);
+    const available = (cycleServices ?? allServices).map((item) => item.bang).filter(Boolean);
+    const result = cycleBang(bangCycle, token, available, reverse, step);
     if (!result) return false;
 
     const rest = value.slice(token.length);
