@@ -16,6 +16,7 @@ export const messages = {
     press: 'Presiona', explore: 'Explorar',
     services: 'servicios', shortcuts: 'Acceso directo',
     otherServices: 'Otros servicios', footer: 'Hecho para llegar más rápido a lo que buscas.', filterServices: 'Filtrar servicios',
+    copyright: '© 2026 ag6l',
     all: 'Todos', open: 'Abrir', searchIn: 'Buscar', tools: 'Herramientas', usefulShortcuts: 'Atajos útiles',
     autoAsk: 'Abrir y preguntar automáticamente', installUserscript: 'Instalar userscript',
     autoAskHelp: 'Requiere Tampermonkey o Violentmonkey. Al elegir una IA, el script pega el prompt y lo envía.',
@@ -61,6 +62,7 @@ export const messages = {
     press: 'Press', explore: 'Explore',
     services: 'services', shortcuts: 'Quick access',
     otherServices: 'Other services', footer: 'Made to get you to what you need faster.', filterServices: 'Filter services',
+    copyright: '© 2026 ag6l',
     all: 'All', open: 'Open', searchIn: 'Search', tools: 'Tools', usefulShortcuts: 'Useful shortcuts',
     autoAsk: 'Open and ask automatically', installUserscript: 'Install userscript',
     autoAskHelp: 'Requires Tampermonkey or Violentmonkey. Choosing an AI makes the script paste and submit the prompt.',
@@ -97,5 +99,5 @@ export const categoryLabels = {
 };
 
 export function copyFor(language) {
-  return messages[language] ?? messages.es;
+  return messages[language] ?? messages.en;
 }

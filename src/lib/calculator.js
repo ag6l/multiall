@@ -62,7 +62,7 @@ export function evaluateExpression(input) {
 }
 
 /** Formats a result for display using the user's locale. */
-export function formatNumber(value, language = 'es') {
+export function formatNumber(value, language = 'en') {
   const locale = language === 'en' ? 'en-US' : 'es-ES';
   const abs = Math.abs(value);
   if (abs !== 0 && (abs < 1e-6 || abs >= 1e15)) {

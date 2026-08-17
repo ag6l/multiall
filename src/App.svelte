@@ -348,7 +348,7 @@
     <ToolsMenu links={toolLinks} {text} />
   {/if}
 
-  <footer>{text.footer}</footer>
+  <footer>{text.footer} <span class="copyright">{text.copyright}</span></footer>
 </main>
 
 <HistoryModal

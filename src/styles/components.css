@@ -336,6 +336,9 @@ kbd { padding: 2px 6px; border: 1px solid var(--line); border-radius: 5px; color
   max-height: min(320px,45vh); padding: 6px; overflow-y: auto; border: 1px solid var(--line);
   border-radius: 15px; background: var(--input-surface); box-shadow: 0 20px 55px rgba(0,0,0,.34);
   scrollbar-width: thin;
+  & .history-item.highlighted {
+    color: var(--accent-strong); background: color-mix(in srgb,var(--accent) 8%,var(--input-surface));
+  }
   & .history-item {
     display: grid; grid-template-columns: 28px minmax(0,1fr) 36px; align-items: center; min-height: 42px; overflow: hidden;
     border-radius: 9px; color: var(--muted); background: var(--input-surface);

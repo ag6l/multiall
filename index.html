@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,9 +12,9 @@
         const theme = preference === 'system'
           ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
           : preference;
-        const language = saved.language || 'es';
+        const language = saved.language || 'en';
         document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
-        document.documentElement.lang = language === 'en' ? 'en' : 'es';
+        document.documentElement.lang = language === 'es' ? 'es' : 'en';
       })();
     </script>
     <title>Search ALL</title>

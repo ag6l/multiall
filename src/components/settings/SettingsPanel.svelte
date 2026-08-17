@@ -14,7 +14,7 @@
   let dialog = $state();
   let username = $state('');
   let theme = $state('system');
-  let language = $state('es');
+  let language = $state('en');
   let location = $state('');
   let defaultSearcher = $state('Google');
   let openResultsInNewTab = $state(false);

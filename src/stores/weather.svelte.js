@@ -24,7 +24,7 @@ export function getWeatherNeedsLocation() {
  * page load (a saved location or a warm cache can still resolve) and is only
  * set once the user asks for the weather.
  */
-export async function loadWeather(location = '', language = 'es', { force = false, allowGeolocation = false } = {}) {
+export async function loadWeather(location = '', language = 'en', { force = false, allowGeolocation = false } = {}) {
   const currentId = ++requestId;
   weatherLoading = true;
   try {

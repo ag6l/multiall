@@ -4,7 +4,7 @@ const LEGACY_COOKIE_NAMES = [
   'searchall-default-searcher', 'searchall-new-tab', 'searchall-background-shade'
 ];
 
-const defaultPreferences = { username: '', theme: 'system', language: 'es', location: '', defaultSearcher: 'Google', openResultsInNewTab: false, backgroundShade: 45 };
+const defaultPreferences = { username: '', theme: 'system', language: 'en', location: '', defaultSearcher: 'Google', openResultsInNewTab: false, backgroundShade: 45 };
 
 function readCookie(name) {
   const prefix = `${encodeURIComponent(name)}=`;
@@ -50,7 +50,7 @@ export function readPreferences() {
     savedAt: Number(stored.savedAt) || 0,
     username: stored.username ?? legacy.username ?? defaultPreferences.username,
     theme: ['dark', 'light', 'system'].includes(theme) ? theme : defaultPreferences.theme,
-    language: ['es', 'en'].includes(language) ? language : defaultPreferences.language,
+    language: ['en', 'es'].includes(language) ? language : defaultPreferences.language,
     location: stored.location ?? legacy.location ?? defaultPreferences.location,
     defaultSearcher: stored.defaultSearcher ?? legacy.defaultSearcher ?? defaultPreferences.defaultSearcher,
     openResultsInNewTab: (stored.openResultsInNewTab ?? legacy.openResultsInNewTab) === true || (stored.openResultsInNewTab ?? legacy.openResultsInNewTab) === 'true',

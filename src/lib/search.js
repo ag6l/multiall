@@ -12,7 +12,11 @@ const timeCopy = {
         'Madrugada, café y una búsqueda pendiente.', 'Aprovecha el silencio para descubrir algo nuevo.',
         '¿Dándole los últimos detalles?', 'Todavía hay tiempo para una gran idea.',
         'El mundo duerme, pero la curiosidad no.', '¿Qué te mantiene despierto?',
-        'Hagamos que esta hora cuente.'
+        'Hagamos que esta hora cuente.',
+        '¿Un proyecto secreto de madrugada?', 'La ciudad duerme, pero tu mente sigue activa.',
+        '¿Resolviendo algo antes del amanecer?', 'Pocas horas, pero suficientes para una buena idea.',
+        'El silencio de la noche ayuda a enfocarse.', '¿Qué pregunta te trajo hasta aquí?',
+        'A esta hora, cada respuesta se agradece el doble.', '¿Últimos ajustes antes de descansar?'
       ],
       [
         'Un buen momento para empezar.', '¿Listo para descubrir algo nuevo?', 'Que tengas una mañana productiva.',
@@ -24,7 +28,11 @@ const timeCopy = {
         '¿Qué resolveremos antes del mediodía?', 'Un paso pequeño puede abrir muchas puertas.',
         'Es hora de poner las ideas en movimiento.', 'Busca, compara y empieza con claridad.',
         'Una mañana tranquila para pensar mejor.', '¿Cuál es la primera pregunta de hoy?',
-        'Haz espacio para descubrir algo inesperado.'
+        'Haz espacio para descubrir algo inesperado.',
+        '¿Qué meta te propones hoy?', 'El día empieza con la pregunta correcta.',
+        '¿Ya tienes tu primera búsqueda del día?', 'Una mañana despejada, una mente despejada.',
+        '¿Listo para avanzar en tu proyecto?', 'El mejor momento para planear es ahora.',
+        'Empieza con calma y termina con claridad.', 'Hoy es un buen día para aprender algo nuevo.'
       ],
       [
         '¿Buscando inspiración?', 'La tarde aún tiene mucho por ofrecer.', 'Hora de encontrar eso que necesitas.',
@@ -36,7 +44,11 @@ const timeCopy = {
         'Una pausa breve, una idea fresca.', 'Todavía puedes descubrir algo sorprendente.',
         '¿Cuál es el siguiente paso?', 'La curiosidad mantiene viva la tarde.',
         'Encuentra claridad antes de continuar.', 'Vamos por esa respuesta que falta.',
-        'Cada búsqueda puede acercarte a la solución.'
+        'Cada búsqueda puede acercarte a la solución.',
+        '¿Cómo va tu tarde hasta ahora?', 'Un buen momento para revisar pendientes.',
+        '¿Qué te gustaría resolver antes de la noche?', 'La tarde invita a seguir avanzando.',
+        'Sigue el ritmo; ya casi llegas a la meta del día.', 'Una idea a tiempo puede ahorrarte horas.',
+        '¿Buscando algo específico o solo explorando?'
       ],
       [
         '¿Trabajando de noche?', 'Una última búsqueda para terminar el día.', 'La noche también es buena para aprender.',
@@ -48,7 +60,11 @@ const timeCopy = {
         'Las ideas nocturnas también merecen atención.', 'Busca con calma; el día ya bajó el ritmo.',
         '¿Reflexionando sobre el siguiente paso?', 'Una consulta más y luego a descansar.',
         'Convierte la curiosidad de hoy en el plan de mañana.', '¿Qué falta por encontrar?',
-        'Que esta búsqueda sea un buen cierre.'
+        'Que esta búsqueda sea un buen cierre.',
+        '¿Repasando lo que hiciste hoy?', 'La noche es buena para atar cabos sueltos.',
+        '¿Una idea de último momento?', 'Cierra el día con la mente tranquila.',
+        'Todavía puedes resolver algo antes de descansar.', 'La noche premia a quien sigue buscando.',
+        '¿Qué aprendiste hoy que valga la pena guardar?'
       ]
     ]
   },
@@ -65,7 +81,11 @@ const timeCopy = {
         'Late hours, coffee, and one pending search.', 'Use the silence to discover something new.',
         'Adding the final touches?', 'There is still time for a great idea.',
         'The world sleeps, but curiosity does not.', 'What is keeping you awake?',
-        'Let us make this hour count.'
+        'Let us make this hour count.',
+        'A secret project at this hour?', 'The city sleeps, but your mind keeps going.',
+        'Solving something before sunrise?', 'Few hours left, but enough for one good idea.',
+        'The quiet of the night helps you focus.', 'What question brought you here?',
+        'At this hour, every answer counts double.', 'Putting the final touches on before you rest?'
       ],
       [
         'A good time to get started.', 'Ready to discover something new?', 'Here is to a productive morning.',
@@ -77,7 +97,11 @@ const timeCopy = {
         'What can we solve before noon?', 'A small step can open many doors.',
         'It is time to put ideas in motion.', 'Search, compare, and begin with clarity.',
         'A quiet morning helps you think better.', 'What is today’s first question?',
-        'Make room to discover something unexpected.'
+        'Make room to discover something unexpected.',
+        'What goal are you chasing today?', 'The day starts with the right question.',
+        'Got your first search of the day yet?', 'A clear morning, a clear mind.',
+        'Ready to move your project forward?', 'The best time to plan is right now.',
+        'Start calm and finish with clarity.', 'Today is a good day to learn something new.'
       ],
       [
         'Looking for inspiration?', 'The afternoon still has plenty to offer.', 'Time to find what you need.',
@@ -89,7 +113,11 @@ const timeCopy = {
         'A short pause can bring a fresh idea.', 'There is still something surprising to discover.',
         'What is the next step?', 'Curiosity keeps the afternoon moving.',
         'Find clarity before you continue.', 'Let us find that missing answer.',
-        'Every search can bring you closer to a solution.'
+        'Every search can bring you closer to a solution.',
+        'How is your afternoon going so far?', 'A good time to check off pending tasks.',
+        'What would you like to solve before evening?', 'The afternoon invites you to keep moving.',
+        'Keep the pace; you are almost through the day.', 'A timely idea can save you hours.',
+        'Looking for something specific, or just exploring?'
       ],
       [
         'Working at night?', 'One last search to wrap up the day.', 'Nighttime is good for learning too.',
@@ -101,7 +129,11 @@ const timeCopy = {
         'Nighttime ideas deserve attention too.', 'Search calmly; the day has slowed down.',
         'Thinking about the next step?', 'One more query, then some rest.',
         'Turn today’s curiosity into tomorrow’s plan.', 'What remains to be found?',
-        'Let this search be a satisfying finish.'
+        'Let this search be a satisfying finish.',
+        'Looking back on what you got done today?', 'Night is good for tying up loose ends.',
+        'One last-minute idea?', 'End the day with a clear mind.',
+        'There is still time to solve one more thing before you rest.', 'The night rewards those who keep looking.',
+        'What did you learn today that is worth keeping?'
       ]
     ]
   }
@@ -114,7 +146,7 @@ function periodForHour(hour) {
   return 3;
 }
 
-export function timeGreeting(language = 'es', date = new Date()) {
+export function timeGreeting(language = 'en', date = new Date()) {
   const copy = timeCopy[language] ?? timeCopy.es;
   const period = periodForHour(date.getHours());
   const notes = copy.notes[period];
@@ -122,7 +154,7 @@ export function timeGreeting(language = 'es', date = new Date()) {
   return { greeting: copy.greetings[period], note: notes[seed % notes.length] };
 }
 
-export function formatLocalDateTime(date = new Date(), language = 'es') {
+export function formatLocalDateTime(date = new Date(), language = 'en') {
   const months = language === 'en'
     ? ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
     : ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];

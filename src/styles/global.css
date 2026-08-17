@@ -89,3 +89,4 @@ h1 {
 .utility-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
 
 footer { margin-top: 38px; color: #52685b; font-size: .78rem; text-align: center; }
+footer .copyright { display: block; margin-top: 4px; opacity: .75; }

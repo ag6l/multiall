@@ -25,7 +25,7 @@
     oncommand,
     onattachments,
     onbangdraft,
-    language = 'es',
+    language = 'en',
     multiline = false,
     text
   } = $props();
@@ -192,6 +192,13 @@
   const queryForHistory = $derived(showBangChip ? queryText : value);
   const matchingHistory = $derived(matchHistory(history, queryForHistory, bangState.phase === 'typing'));
   const showHistory = $derived(searchFocused && !commandMode && matchingHistory.length > 0);
+  // Highlighted row in the visible history dropdown, walked with the arrow
+  // keys the same way the command palette's suggestion list is. -1 means
+  // nothing is highlighted, so plain ArrowUp/ArrowDown still fall through to
+  // the older "recall full history into the bar" behaviour below.
+  let historyHighlight = $state(-1);
+  $effect(() => { if (!showHistory) historyHighlight = -1; });
+  $effect(() => { if (historyHighlight >= matchingHistory.length) historyHighlight = matchingHistory.length - 1; });
   const placeholder = $derived(multiline ? text.unifiedPlaceholder : text.searchPlaceholder);
   const activeSearchGuide = $derived(searchGuideFor(service, language));
   const serviceInitials = $derived(
@@ -741,6 +748,10 @@
 
     if (event.key === 'Enter' && !mod && !event.altKey) {
       event.preventDefault();
+      if (showHistory && historyHighlight >= 0 && matchingHistory[historyHighlight]) {
+        reuseQuery(matchingHistory[historyHighlight]);
+        return;
+      }
       if (multiline && event.shiftKey) replaceSelection('\n');
       else submit();
       return;
@@ -756,6 +767,20 @@
       bangEditing = true;
       pendingCaret = Math.max(0, bangState.prefixLen - 1);
       tick().then(flushCaret);
+      return;
+    }
+
+    // While the history dropdown is showing, arrows walk its rows instead of
+    // recalling entries into the bar — Enter (below) then reuses whichever row
+    // is highlighted. Falls through to the older full-history recall once the
+    // dropdown is closed (no matches, or the field lost focus).
+    if (showHistory && (event.key === 'ArrowUp' || event.key === 'ArrowDown') && !mod && !event.altKey && !event.shiftKey) {
+      event.preventDefault();
+      const count = matchingHistory.length;
+      const step = event.key === 'ArrowDown' ? 1 : -1;
+      historyHighlight = historyHighlight < 0
+        ? (step > 0 ? 0 : count - 1)
+        : (historyHighlight + step + count) % count;
       return;
     }
 
@@ -1235,7 +1260,16 @@
   {/if}
 
   {#if showHistory}
-    <QueryHistory items={matchingHistory} {text} typed={queryForHistory} services={allServices} onreuse={reuseQuery} onremove={onhistoryremove} />
+    <QueryHistory
+      items={matchingHistory}
+      {text}
+      typed={queryForHistory}
+      services={allServices}
+      highlighted={historyHighlight}
+      onreuse={reuseQuery}
+      onremove={onhistoryremove}
+      onhighlight={(index) => (historyHighlight = index)}
+    />
   {/if}
 </div>
 

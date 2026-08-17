@@ -65,14 +65,14 @@ export function clearWeatherCache() {
   try { localStorage.removeItem(WEATHER_CACHE_KEY); } catch {}
 }
 
-function describeWeather(weather, language = 'es') {
+function describeWeather(weather, language = 'en') {
   if (!weather) return null;
   const [condition, icon] = conditionFor(weather.code, weather.isDay);
   const copy = descriptions[language] ?? descriptions.es;
   return { ...weather, icon, description: copy[condition] };
 }
 
-export function describeForecast(forecast, language = 'es') {
+export function describeForecast(forecast, language = 'en') {
   if (!forecast) return null;
   return {
     ...forecast,
@@ -97,7 +97,7 @@ async function resolvePlace(location, language, allowGeolocation) {
   return deviceCoordinates();
 }
 
-export async function getCurrentWeather(location = '', language = 'es', { force = false, allowGeolocation = false } = {}) {
+export async function getCurrentWeather(location = '', language = 'en', { force = false, allowGeolocation = false } = {}) {
   const id = cacheId(location, language);
   if (!force) {
     const cached = cachedWeather(id);

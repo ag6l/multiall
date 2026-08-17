@@ -1,7 +1,7 @@
 <script>
   import { evaluateExpression, formatNumber } from '../../lib/calculator.js';
 
-  let { query = '', language = 'es', text } = $props();
+  let { query = '', language = 'en', text } = $props();
 
   let copied = $state(false);
   let copyTimer;

@@ -1,7 +1,7 @@
 <script>
   import { googleTranslateLanguageCodes } from '../../lib/bang/options.js';
 
-  let { translationOptions, activeBang, language = 'es', onchange } = $props();
+  let { translationOptions, activeBang, language = 'en', onchange } = $props();
 
   const translatedLanguages = $derived.by(() => {
     let dn;
