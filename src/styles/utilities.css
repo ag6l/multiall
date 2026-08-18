@@ -60,11 +60,30 @@
   .utility-grid { grid-template-columns: 1fr; }
   .tools-menu { position: absolute; top: 18px; left: 11px; & summary { width: 42px; justify-content: center; &:not(:focus) { gap: 0; font-size: 0; } & span { font-size: 1rem; } } }
   .settings-controls { position: absolute; top: 18px; right: 11px; width: min(290px,calc(100vw - 22px)); }
-  .settings-trigger { width: 42px; justify-content: center; font-size: 0; & span { font-size: 1rem; } }
+  .settings-trigger { width: 42px; padding: 0; justify-content: center; gap: 0; font-size: 0; & span { font-size: 1rem; } }
   .settings-form { padding: 21px; }
 }
 @media (max-width:520px) { .search .translation-options { max-width: 150px; & select { width: 58px; } } }
-@media (max-width:620px) { .automation-panel { grid-template-columns: 1fr; & small { grid-column: auto; } } }
+@media (max-width:620px) {
+  .automation-panel {
+    &>summary {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      color: var(--accent); font-size: .84rem; font-weight: 750; cursor: pointer; list-style: none;
+      &::-webkit-details-marker { display: none; }
+      & .collapse-chevron { font-size: 1.1rem; transition: transform 160ms ease; }
+    }
+    &:not([open]) {
+      width: 42px; height: 42px; margin-left: auto; padding: 0;
+      &>summary { width: 100%; height: 100%; justify-content: center; }
+      & .userscript-summary-label,& .collapse-chevron { display: none; }
+      & .userscript-summary-icon { display: inline; font-size: 1.2rem; line-height: 1; }
+    }
+    &[open]>summary { margin-bottom: 10px; & .collapse-chevron { transform: rotate(180deg); } }
+    &:not([open])>.automation-panel-content { display: none; }
+    & .automation-panel-content { grid-template-columns: 1fr; }
+    & small { grid-column: auto; }
+  }
+}
 @media (max-width:600px) {
   .weather-panel {
     padding: 10px;

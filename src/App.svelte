@@ -107,6 +107,7 @@
   // Column count reported by the grid, so the search bar can step the bang
   // selection by a whole row when the vertical arrows are used.
   let gridColumns = $state(1);
+  let userscriptPanelOpen = $state(true);
 
   $effect(() => { setQuery(query); });
   $effect(() => { setActiveBang(activeBang); });
@@ -123,6 +124,10 @@
     const colorScheme = window.matchMedia('(prefers-color-scheme: light)');
     const syncSystemTheme = () => preferences.theme === 'system' && applyTheme('system');
     colorScheme.addEventListener('change', syncSystemTheme);
+    const phoneLayout = window.matchMedia('(max-width: 620px)');
+    const syncUserscriptPanel = ({ matches }) => { userscriptPanelOpen = !matches; };
+    syncUserscriptPanel(phoneLayout);
+    phoneLayout.addEventListener('change', syncUserscriptPanel);
 
     syncPreferencesBackup();
     loadSavedBackground();
@@ -136,6 +141,7 @@
       cleanupPreferences();
       cleanupUi();
       colorScheme.removeEventListener('change', syncSystemTheme);
+      phoneLayout.removeEventListener('change', syncUserscriptPanel);
     };
   });
 
@@ -297,21 +303,28 @@
     <span aria-hidden="true">⚙</span>
     {text.settings}
   </button>
-  <div class="automation-panel">
-    <label class="automation-toggle">
-      <input
-        type="checkbox"
-        checked={aiAutomation}
-        onchange={(event) => setAiAutomation(event.currentTarget.checked)}
-      />
-      <span>{text.autoAsk}</span>
-    </label>
-    <a class="userscript-install" href="./userscripts/aiforall.user.js" target="_blank" rel="noreferrer">
-      <span>{text.installUserscript.split(' ')[0]}</span>
-      <span>{text.installUserscript.split(' ').slice(1).join(' ')} ↗</span>
-    </a>
-    <small>{text.autoAskHelp}</small>
-  </div>
+  <details class="automation-panel" bind:open={userscriptPanelOpen}>
+    <summary>
+      <span class="userscript-summary-label">{text.installUserscript}</span>
+      <span class="userscript-summary-icon" aria-hidden="true">⇩</span>
+      <span class="collapse-chevron" aria-hidden="true">⌄</span>
+    </summary>
+    <div class="automation-panel-content">
+      <label class="automation-toggle">
+        <input
+          type="checkbox"
+          checked={aiAutomation}
+          onchange={(event) => setAiAutomation(event.currentTarget.checked)}
+        />
+        <span>{text.autoAsk}</span>
+      </label>
+      <a class="userscript-install" href="./userscripts/aiforall.user.js" target="_blank" rel="noreferrer">
+        <span>{text.installUserscript.split(' ')[0]}</span>
+        <span>{text.installUserscript.split(' ').slice(1).join(' ')} ↗</span>
+      </a>
+      <small>{text.autoAskHelp}</small>
+    </div>
+  </details>
 </aside>
 
 <SettingsPanel
