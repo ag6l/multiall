@@ -1,7 +1,6 @@
 <script>
-  import { iconTone } from '../../lib/iconTone.js';
+  import { iconHref, iconIsRaster, iconTone } from '../../lib/icon.js';
   let { service, query, text, bangSelected = false, showBangHint = false, onclick } = $props();
-  const initials = $derived(service.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase());
   // The grid decides when bangs are being picked; it is the only place that
   // knows about an in-place edit, which the query text alone cannot show.
   const showShortcut = $derived(Boolean(service.bang) && showBangHint);
@@ -26,13 +25,9 @@
   title={service.bang ? text.middleClickOpen : undefined}
 >
   <span class="icon-shell">
-    {#if service.icon?.symbol}
-      <svg class="service-icon" class:raster-icon={service.icon.raster} class:icon-tone-dark={tone === 'dark'} class:icon-tone-light={tone === 'light'} aria-hidden="true" viewBox="0 0 24 24">
-        <use href={`./assets/icons.svg#${service.icon.symbol}`}></use>
-      </svg>
-    {:else}
-      <span class="initials" aria-hidden="true">{initials}</span>
-    {/if}
+    <svg class="service-icon" class:raster-icon={iconIsRaster(service.icon)} class:icon-tone-dark={tone === 'dark'} class:icon-tone-light={tone === 'light'} aria-hidden="true" viewBox="0 0 24 24">
+      <use href={iconHref(service.icon)}></use>
+    </svg>
   </span>
   <span class="service-name">{service.name}</span>
   {#if showShortcut}<kbd class="bang-hint" aria-hidden="true">{service.bang}</kbd>{/if}

@@ -20,7 +20,7 @@
 
 /**
  * @typedef {'none'|'typing'|'activated'|'options-typing'|'options-complete'} BangPhase
- * @typedef {{bang?: string|null, name?: string, icon?: {symbol?: string, raster?: boolean},
+ * @typedef {{bang?: string|null, name?: string, icon?: string,
  *            tags?: string[], search?: string|null}} ServiceLike
  * @typedef {{phase: BangPhase, bang: string, service: ServiceLike|null,
  *            options: string|null, prefixLen: number, query: string}} BangState

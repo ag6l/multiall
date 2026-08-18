@@ -5,7 +5,7 @@
     parseBangValue, normalizeValue, spliceValue,
     deleteStart, deleteEnd, cycleBang, caretAfterDomSync
   } from '../../lib/bang/manager.js';
-  import { iconTone } from '../../lib/iconTone.js';
+  import { iconHref, iconIsRaster, iconTone } from '../../lib/icon.js';
   import { tokenizeQuery } from '../../lib/tokenizers/highlighter.js';
   import { matchHistory } from '../../lib/search/historyMatcher.js';
   import { encodeAttachment, MAX_ATTACHMENT_PAYLOAD } from '../../lib/search.js';
@@ -210,9 +210,6 @@
   $effect(() => { if (historyHighlight >= matchingHistory.length) historyHighlight = matchingHistory.length - 1; });
   const placeholder = $derived(multiline ? text.unifiedPlaceholder : text.searchPlaceholder);
   const activeSearchGuide = $derived(searchGuideFor(service, language));
-  const serviceInitials = $derived(
-    service?.name?.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase() ?? ''
-  );
   const tone = $derived(iconTone(service?.icon));
 
   // Report the committed bang upward (empty while the bang is still being typed).
@@ -1176,7 +1173,7 @@
 
 {#snippet segmentNode(segment)}{#if segment.type === 'operator'}{#if segment.tone === 'filter'}<span class="inline-search-operator filter"><span class="operator-card"><span class="operator-card-label">{#if segment.icon}<span class="nerd-icon" contenteditable="false" data-deco="1" data-text="" aria-hidden="true">{segment.icon}</span>{/if}{segment.prefix}</span><span class="operator-card-value">{segment.value}</span></span></span>{:else}<span class="inline-search-operator {segment.tone}">{segment.text}</span>{/if}{:else if segment.type === 'keyword'}<span class="search-keyword">{segment.text}</span>{:else if segment.type === 'markdown'}<span class="hl-md hl-md-{segment.kind}" class:markers-revealed={markerRevealed(segment)}>{#if segment.open}<span class="md-mark">{segment.open}</span>{/if}{segment.content}{#if segment.close}<span class="md-mark">{segment.close}</span>{/if}</span>{:else if segment.type === 'math'}<span class="hl-math hl-math-{segment.kind}">{segment.text}</span>{:else}<span class="hl-text">{segment.text}</span>{/if}{/snippet}
 
-{#snippet bangChip()}<span class="bang-chip" class:is-selected={chipSelected} contenteditable="false" data-deco="1" data-text={bangChipText} title={bangState.bang}>{#if service?.icon?.symbol}<svg class="bang-chip-icon" class:raster-icon={service.icon.raster} class:icon-tone-dark={tone === 'dark'} class:icon-tone-light={tone === 'light'} viewBox="0 0 24 24"><use href={`./assets/icons.svg#${service.icon.symbol}`}></use></svg>{:else}<span class="bang-chip-initials">{serviceInitials}</span>{/if}</span>{/snippet}
+{#snippet bangChip()}<span class="bang-chip" class:is-selected={chipSelected} contenteditable="false" data-deco="1" data-text={bangChipText} title={bangState.bang}><svg class="bang-chip-icon" class:raster-icon={iconIsRaster(service.icon)} class:icon-tone-dark={tone === 'dark'} class:icon-tone-light={tone === 'light'} viewBox="0 0 24 24"><use href={iconHref(service.icon)}></use></svg></span>{/snippet}
 
 {#snippet optionsChip()}{#if translationOptions}<span class="bang-deco" class:is-selected={chipSelected} contenteditable="false" data-deco="1" data-text={optionsChipText}><TranslationSelector {translationOptions} activeBang={`${bangState.bang}[${bangState.options}]`} {language} onchange={handleTranslationChange} /></span>{:else}<span class="bang-options-chip" class:is-selected={chipSelected} contenteditable="false" data-deco="1" data-text={optionsChipText} title={bangState.options}>{bangState.options}</span>{/if}{/snippet}
 
@@ -1252,7 +1249,7 @@
   <QuickAnswer query={queryText} {language} {text} />
 
   {#if service && showBangChip && activeSearchGuide}
-    <SearchGuide activeService={service} {activeSearchGuide} activeServiceInitials={serviceInitials} />
+    <SearchGuide activeService={service} {activeSearchGuide} />
   {/if}
 
   {#if showCommands}

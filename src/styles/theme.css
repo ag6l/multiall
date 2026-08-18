@@ -62,10 +62,7 @@
       background: rgba(9,105,218,.5); box-shadow: inset 0 0 0 1px rgba(20,35,26,.28);
     }
     & .search .active-icon-shell, & .service-card .icon-shell { background: #fff; box-shadow: inset 0 0 0 1px rgba(20,35,26,.1); }
-    & .search .active-icon-initials { color: #14231a; }
-    & .service-card .initials { color: #14231a; }
     & .bang-chip { background: #fff; box-shadow: inset 0 0 0 1px rgba(20,35,26,.12); }
-    & .bang-chip-initials { color: #14231a; }
     & .bang-options-chip { color: #14231a; background: rgba(20,35,26,.08); border-color: rgba(20,35,26,.18); }
     & .search-keyword { color: #096fa8; }
     & .search .hl-math-function { color: #096fa8; }

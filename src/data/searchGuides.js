@@ -1492,7 +1492,20 @@ export function searchGuideFor(service, language = 'en') {
   const supportsWebSyntax = ['Google', 'DuckDuckGo'].includes(service.name);
   const supportsMarkdown = Boolean(service.scope?.includes('AI'));
   const requiresUserscript = Boolean(service.requiresUserscript);
-  const facts = serviceFacts[service.name]?.[locale] ?? [];
+  const catalogFacts = locale === 'es'
+    ? [
+        service.search
+          ? `${service.name} ofrece una búsqueda directa en ${hostname}.`
+          : `${service.name} está disponible en ${hostname}.`,
+        `MultiALL lo clasifica en ${service.category} y permite abrirlo con ${service.bang}.`
+      ]
+    : [
+        service.search
+          ? `${service.name} provides direct search at ${hostname}.`
+          : `${service.name} is available at ${hostname}.`,
+        `MultiALL groups it under ${service.category} and opens it with ${service.bang}.`
+      ];
+  const facts = serviceFacts[service.name]?.[locale] ?? catalogFacts;
 
   return {
     summary: locale === 'es'

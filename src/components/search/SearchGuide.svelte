@@ -1,14 +1,13 @@
 <script>
-  import { iconTone } from '../../lib/iconTone.js';
-  let { activeService, activeSearchGuide, activeServiceInitials } = $props();
+  import { iconHref, iconIsRaster, iconTone } from '../../lib/icon.js';
+  let { activeService, activeSearchGuide } = $props();
+  const tone = $derived(iconTone(activeService.icon));
 </script>
 
 {#key activeService.name}
   <aside class="active-search-guide" aria-label={`${activeService.name}: ${activeSearchGuide.syntaxLabel}`}>
     <span class="guide-icon" aria-hidden="true">
-      {#if activeService.icon?.symbol}
-        <svg class:raster-icon={activeService.icon.raster} class:icon-tone-dark={iconTone(activeService.icon) === 'dark'} class:icon-tone-light={iconTone(activeService.icon) === 'light'} viewBox="0 0 24 24"><use href={`./assets/icons.svg#${activeService.icon.symbol}`}></use></svg>
-      {:else}<span>{activeServiceInitials}</span>{/if}
+      <svg class:raster-icon={iconIsRaster(activeService.icon)} class:icon-tone-dark={tone === 'dark'} class:icon-tone-light={tone === 'light'} viewBox="0 0 24 24"><use href={iconHref(activeService.icon)}></use></svg>
     </span>
     <div class="guide-content">
       <div class="guide-summary">

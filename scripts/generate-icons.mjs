@@ -1,12 +1,20 @@
 /**
- * Appends brand symbols to `public/assets/icons.svg` from simple-icons (CC0-1.0)
- * and refreshes the Brotli copy that `vite.config.js` serves under the canonical
- * `icons.svg` URL.
+ * Keeps `public/assets/icons.svg` in step with the catalog, then regenerates
+ * everything derived from it: `src/data/iconTones.js`, `src/data/iconRaster.js`
+ * and the Brotli copy that `vite.config.js` serves under the canonical URL.
  *
- * Idempotent: symbols already present in the sprite are left untouched, so this
- * can be re-run after adding services. Services with no accurate icon available
- * are intentionally absent — their cards fall back to initials rather than
- * borrowing another brand's mark.
+ * One rule holds the whole icon path together: a service's `icon` is the id of a
+ * `<symbol>` in the sprite, and that id is the service slug with no prefix.
+ * Services that share a brand share a symbol.
+ *
+ * A missing mark is resolved in this order, so the result is as sharp as the web
+ * allows without ever falling back to a letter monogram:
+ *   1. simple-icons (CC0-1.0) when the slug names one of its icons
+ *   2. the site's own `/favicon.svg`, but only when it is a real vector
+ *   3. the site's raster favicon, embedded losslessly
+ * A slug that resolves to none of those fails the run instead of shipping a hole.
+ *
+ * Idempotent: symbols already in the sprite are left untouched.
  *
  *   node scripts/generate-icons.mjs
  */
@@ -15,23 +23,24 @@ import { brotliCompressSync, constants } from 'node:zlib';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as simpleIcons from 'simple-icons';
+import { services } from '../src/data/services.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const spritePath = resolve(root, 'public/assets/icons.svg');
 const tonesPath = resolve(root, 'src/data/iconTones.js');
+const rasterPath = resolve(root, 'src/data/iconRaster.js');
 
 /**
  * Symbols whose tone cannot be read off a single `fill` on the symbol element,
- * because the colour sits on nested paths. Raster and multi-colour symbols are
- * deliberately absent: a raster already carries the white-background filter and
- * would conflict, and one tone cannot describe a multi-colour mark.
+ * because the colour sits on nested paths. Multi-colour symbols are deliberately
+ * absent: one tone cannot describe a multi-colour mark.
  */
 const TONE_OVERRIDES = {
-  'multiall-aol': 'dark',
-  'aiforall-grok': 'dark',
+  aol: 'dark',
+  grok: 'dark',
   // Readable (#636466) but a mid grey reads poorly on the dark shell, so it is
   // lightened rather than left at roughly 3.6:1.
-  'multiall-wikipedia': 'dark'
+  wikipedia: 'dark'
 };
 
 /** WCAG relative luminance of a #rrggbb colour. */
@@ -50,278 +59,208 @@ function luminance(hex) {
  *
  * Thresholds come from contrast ratio against those shells: below ~0.05
  * luminance a mark has under 2:1 against black, and above ~0.6 it has under
- * 2:1 against white. Symbols in between are left alone so brands keep their
- * own colour, and multi-fill symbols (no single `fill` on the symbol) are
- * skipped since one value cannot describe them.
+ * 2:1 against white. Symbols in between are left alone so brands keep their own
+ * colour, and multi-fill symbols (no single `fill`) are skipped since one value
+ * cannot describe them. Raster symbols are excluded because they already carry
+ * the white-background filter and a second `filter` would replace it.
  */
-function buildTones(svg) {
+function buildTones(svg, raster) {
   const tones = new Map();
   for (const [, id, hex] of svg.matchAll(/<symbol id="([^"]+)"[^>]*\sfill="#([0-9a-fA-F]{6})"/g)) {
+    if (raster.has(id)) continue;
     const light = luminance(hex.toLowerCase());
     if (light < 0.05) tones.set(id, 'dark');
     else if (light > 0.6) tones.set(id, 'light');
   }
-  for (const [id, tone] of Object.entries(TONE_OVERRIDES)) tones.set(id, tone);
-  const entries = [...tones].map(([id, tone]) => `  '${id}': '${tone}',`);
+  for (const [id, tone] of Object.entries(TONE_OVERRIDES)) if (!raster.has(id)) tones.set(id, tone);
+  return module(
+    [
+      "// 'dark'  = the mark is near-black, so it needs lightening on the dark theme.",
+      "// 'light' = the mark is near-white or very bright, so it needs darkening on",
+      '//           the light theme. Everything else keeps its brand colour as-is.'
+    ],
+    'iconTones',
+    [...tones].sort(([a], [b]) => a.localeCompare(b)).map(([id, tone]) => `  '${id}': '${tone}',`),
+    '{}'
+  );
+}
+
+/**
+ * Symbols carrying an embedded bitmap rather than paths. Read back off the
+ * finished sprite, so a `favicon.svg` that turned out to wrap a PNG is still
+ * reported as the raster it is. The CSS keys the white-background filter off
+ * this set.
+ */
+function buildRaster(ids) {
+  return module(
+    ['// Symbols whose artwork is an embedded bitmap, so the shell has to knock out', '// their white background.'],
+    'iconRaster',
+    [...ids].sort().map((id) => `  '${id}',`),
+    '[]'
+  );
+}
+
+function module(comment, name, entries, empty) {
+  const open = empty === '{}' ? '{' : '[';
+  const close = empty === '{}' ? '};' : '];';
   return [
     '// Generated by scripts/generate-icons.mjs — do not edit by hand.',
     '//',
-    "// 'dark'  = the mark is near-black, so it needs lightening on the dark theme.",
-    "// 'light' = the mark is near-white or very bright, so it needs darkening on",
-    '//           the light theme. Everything else keeps its brand colour as-is.',
-    'export const iconTones = {',
+    ...comment,
+    `export const ${name} = ${entries.length ? open : empty};`.replace(
+      `= ${open};`,
+      `= ${open}`
+    ),
     ...entries,
-    '};',
+    ...(entries.length ? [close] : []),
     ''
   ].join('\n');
 }
 
-/** simple-icons slug per sprite symbol id (without the `multiall-` prefix). */
-const SYMBOLS = {
-  baidu: 'baidu',
-  naver: 'naver',
-  searxng: 'searxng',
-  unsplash: 'unsplash',
-  pexels: 'pexels',
-  'google-maps': 'googlemaps',
-  'google-images': 'google',
-  openstreetmap: 'openstreetmap',
-  internetarchive: 'internetarchive',
-  arxiv: 'arxiv',
-  pubmed: 'pubmed',
-  semanticscholar: 'semanticscholar',
-  mdn: 'mdnwebdocs',
-  npm: 'npm',
-  pypi: 'pypi',
-  crates: 'rust',
-  docker: 'docker',
-  archlinux: 'archlinux',
-  huggingface: 'huggingface',
-  imdb: 'imdb',
-  letterboxd: 'letterboxd',
-  myanimelist: 'myanimelist',
-  anilist: 'anilist',
-  spotify: 'spotify',
-  soundcloud: 'soundcloud',
-  bandcamp: 'bandcamp',
-  genius: 'genius',
-  goodreads: 'goodreads',
-  ebay: 'ebay',
-  aliexpress: 'aliexpress',
-  etsy: 'etsy',
-  'google-news': 'googlenews',
-  wikidata: 'wikidata',
-  wikimediacommons: 'wikimediacommons',
-  wikibooks: 'wikibooks',
-  researchgate: 'researchgate',
-  ieee: 'ieee',
-  zenodo: 'zenodo',
-  codeberg: 'codeberg',
-  bitbucket: 'bitbucket',
-  sourceforge: 'sourceforge',
-  packagist: 'packagist',
-  rubygems: 'rubygems',
-  nuget: 'nuget',
-  maven: 'apachemaven',
-  go: 'go',
-  homebrew: 'homebrew',
-  flathub: 'flathub',
-  snapcraft: 'snapcraft',
-  nixos: 'nixos',
-  debian: 'debian',
-  ubuntu: 'ubuntu',
-  codesandbox: 'codesandbox',
-  kaggle: 'kaggle',
-  paperswithcode: 'paperswithcode',
-  producthunt: 'producthunt',
-  devto: 'devdotto',
-  hashnode: 'hashnode',
-  substack: 'substack',
-  threads: 'threads',
-  bluesky: 'bluesky',
-  lemmy: 'lemmy',
-  steam: 'steam',
-  gog: 'gogdotcom',
-  itchio: 'itchdotio',
-  pcgamingwiki: 'pcgamingwiki',
-  kick: 'kick',
-  odysee: 'odysee',
-  peertube: 'peertube',
-  dailymotion: 'dailymotion',
-  bilibili: 'bilibili',
-  rottentomatoes: 'rottentomatoes',
-  metacritic: 'metacritic',
-  tmdb: 'themoviedatabase',
-  lastfm: 'lastdotfm',
-  discogs: 'discogs',
-  musicbrainz: 'musicbrainz',
-  deezer: 'deezer',
-  tidal: 'tidal',
-  applemusic: 'applemusic',
-  youtubemusic: 'youtubemusic',
-  yelp: 'yelp',
-  tripadvisor: 'tripadvisor',
-  airbnb: 'airbnb',
-  indeed: 'indeed',
-  glassdoor: 'glassdoor',
-  coursera: 'coursera',
-  edx: 'edx',
-  udemy: 'udemy',
-  khanacademy: 'khanacademy',
-  quizlet: 'quizlet',
-  openverse: 'openverse',
-'ao3': 'archiveofourown',
-  'dblp': 'dblp',
-  'orcid': 'orcid',
-  'readthedocs': 'readthedocs',
-  'freecodecamp': 'freecodecamp',
-  'leetcode': 'leetcode',
-  'hackerrank': 'hackerrank',
-  'codewars': 'codewars',
-  'exercism': 'exercism',
-  'codeforces': 'codeforces',
-  'terraform': 'terraform',
-  'ansible': 'ansible',
-  'artifacthub': 'artifacthub',
-  'kubernetes': 'kubernetes',
-  'anaconda': 'anaconda',
-  'cran': 'r',
-  'haskell': 'haskell',
-  'lua': 'lua',
-  'perl': 'perl',
-  'swift': 'swift',
-  'cocoapods': 'cocoapods',
-  'gradle': 'gradle',
-  'jetbrains': 'jetbrains',
-  'chrome': 'googlechrome',
-  'firefox': 'firefoxbrowser',
-  'wordpress': 'wordpress',
-  'postman': 'postman',
-  'observable': 'observable',
-  'glitch': 'glitch',
-  'figma': 'figma',
-  'dribbble': 'dribbble',
-  'behance': 'behance',
-  'artstation': 'artstation',
-  'google-fonts': 'googlefonts',
-  'fontawesome': 'fontawesome',
-  'iconify': 'iconify',
-  'simpleicons': 'simpleicons',
-  'pixabay': 'pixabay',
-  'giphy': 'giphy',
-  'tiktok': 'tiktok',
-  'rumble': 'rumble',
-  'vk': 'vk',
-  'zhihu': 'zhihu',
-  'lobsters': 'lobsters',
-  'newegg': 'newegg',
-  'alibaba': 'alibabadotcom',
-  'booking': 'bookingdotcom',
-  'alltrails': 'alltrails',
-  'untappd': 'untappd',
-  'deepl': 'deepl',
-  'nounproject': 'nounproject',
-  'tradingview': 'tradingview',
-'wikivoyage': 'wikivoyage',
-  'wikisource': 'wikisource',
-  'wikiversity': 'wikiversity',
-  'fandom': 'fandom',
-  'nasa': 'nasa',
-  'gitea': 'gitea',
-  'launchpad': 'launchpad',
-  'yarn': 'yarn',
-  'deno': 'deno',
-  'jsr': 'jsr',
-  'jsdelivr': 'jsdelivr',
-  'librariesio': 'librariesdotio',
-  'snyk': 'snyk',
-  'grafana': 'grafana',
-  'docsrs': 'docsdotrs',
-  'python': 'python',
-  'postgresql': 'postgresql',
-  'digitalocean': 'digitalocean',
-  'trakt': 'trakt',
-  'kitsu': 'kitsu',
-  'beatport': 'beatport',
-  'mixcloud': 'mixcloud',
-  'audiomack': 'audiomack',
-  'songkick': 'songkick',
-  'applepodcasts': 'applepodcasts',
-  'audible': 'audible',
-  'px500': '500px',
-  'ikea': 'ikea',
-  'zara': 'zara',
-  'nike': 'nike',
-  'adidas': 'adidas',
-  'vinted': 'vinted',
-  'gumtree': 'gumtree',
-  'foursquare': 'foursquare',
-  'deliveroo': 'deliveroo',
-  'upwork': 'upwork',
-  'fiverr': 'fiverr',
-  'freelancer': 'freelancer',
-  'codecademy': 'codecademy',
-  'pluralsight': 'pluralsight',
-  'skillshare': 'skillshare',
-  'datacamp': 'datacamp',
-  'minds': 'minds',
-  'allegro': 'allegro',
-  'carrefour': 'carrefour',
-  'crunchyroll': 'crunchyroll',
-  'fnac': 'fnac',
-  'mediamarkt': 'mediamarkt',
-  'netflix': 'netflix',
-  'otto': 'otto',
-  'plex': 'plex',
-  'rakuten': 'rakuten',
-  'taobao': 'taobao',
-  'webtoon': 'webtoon',
-  'tapas': 'tapas',
-  'wattpad': 'wattpad',
-  'furaffinity': 'furaffinity',
-  'weasyl': 'weasyl',
-  'newgrounds': 'newgrounds',
-  'opencritic': 'opencritic',
-  'humblebundle': 'humblebundle',
-  'wish': 'wish',
-  'shopee': 'shopee',
-  'zalando': 'zalando',
-  'farfetch': 'farfetch',
-  'stockx': 'stockx',
-  'nextdoor': 'nextdoor',
-  'meetup': 'meetup',
-  'ticketmaster': 'ticketmaster',
-  'pandora': 'pandora',
-  'iheartradio': 'iheartradio',
-  'waze': 'waze',
-  'crunchbase': 'crunchbase',
-  'wikiquote': 'wikiquote',
-  'chessdotcom': 'chessdotcom',
-};
+const escapeXml = (v) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const iconBySlug = new Map(
+  Object.keys(simpleIcons)
+    .filter((key) => key.startsWith('si'))
+    .map((key) => simpleIcons[key])
+    .filter((icon) => icon?.slug)
+    .map((icon) => [icon.slug, icon])
+);
 
-const iconFor = (slug) => simpleIcons[`si${slug.charAt(0).toUpperCase()}${slug.slice(1)}`];
-const escapeXml = (value) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const UA = 'Mozilla/5.0 (compatible; MultiallIconFetcher/2.0)';
+
+async function grab(url) {
+  try {
+    const response = await fetch(url, {
+      headers: { 'user-agent': UA, accept: '*/*' },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(15_000)
+    });
+    return response.ok ? Buffer.from(await response.arrayBuffer()) : null;
+  } catch {
+    return null;
+  }
+}
+
+function imageMime(bytes) {
+  if (bytes.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) return 'image/png';
+  if (bytes[0] === 0 && bytes[1] === 0 && bytes[2] === 1 && bytes[3] === 0) return 'image/x-icon';
+  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return 'image/jpeg';
+  if (bytes.subarray(0, 6).toString('ascii').startsWith('GIF8')) return 'image/gif';
+  if (bytes.subarray(0, 4).toString('ascii') === 'RIFF' && bytes.subarray(8, 12).toString('ascii') === 'WEBP') return 'image/webp';
+  return '';
+}
+
+/** Inline an external SVG document as a symbol body, namespacing its internal ids. */
+function svgToSymbol(slug, source, title) {
+  const open = /<svg\b[^>]*>/i.exec(source);
+  if (!open) return null;
+  const viewBox = /viewBox=["']([^"']+)["']/i.exec(open[0])?.[1];
+  const width = /\bwidth=["']([\d.]+)/i.exec(open[0])?.[1];
+  const height = /\bheight=["']([\d.]+)/i.exec(open[0])?.[1];
+  const box = viewBox ?? (width && height ? `0 0 ${width} ${height}` : '0 0 24 24');
+  let inner = source
+    .slice(open.index + open[0].length, source.lastIndexOf('</svg>'))
+    .replace(/<\?xml[\s\S]*?\?>/g, '')
+    .replace(/<!DOCTYPE[\s\S]*?>/g, '')
+    .replace(/<metadata\b[\s\S]*?<\/metadata>/g, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  for (const id of new Set([...inner.matchAll(/id=["']([^"']+)["']/g)].map((m) => m[1]))) {
+    inner = inner.split(`id="${id}"`).join(`id="${slug}-${id}"`);
+    inner = inner.split(`url(#${id})`).join(`url(#${slug}-${id})`);
+    inner = inner.split(`href="#${id}"`).join(`href="#${slug}-${id}"`);
+  }
+  return `  <symbol id="${slug}" viewBox="${box}"><title>${escapeXml(title)}</title>${inner}</symbol>`;
+}
+
+/** Origins worth asking for a mark: the service's own host, then its bare domain. */
+function originsFor(service) {
+  const out = [];
+  const seen = new Set();
+  for (const address of [service.home, service.search].filter((a) => a && /^https?:\/\//.test(a))) {
+    const origin = new URL(address);
+    const labels = origin.hostname.split('.');
+    const hosts = [origin.hostname];
+    if (labels.length > 2) hosts.push(labels.slice(-2).join('.'));
+    for (const host of hosts) {
+      if (seen.has(host)) continue;
+      seen.add(host);
+      out.push(new URL(`${origin.protocol}//${host}`));
+    }
+  }
+  return out;
+}
+
+async function fetchMark(slug, service) {
+  for (const origin of originsFor(service)) {
+    const bytes = await grab(new URL('/favicon.svg', origin).href);
+    if (!bytes) continue;
+    const text = bytes.toString('utf8');
+    if (!text.includes('<svg')) continue;
+    // A favicon.svg that wraps a bitmap is not a vector mark.
+    if (/<image\b/i.test(text) || text.includes('data:image')) continue;
+    const symbol = svgToSymbol(slug, text, service.name);
+    if (symbol) return symbol;
+  }
+  for (const origin of originsFor(service)) {
+    for (const url of [
+      new URL('/favicon.ico', origin).href,
+      new URL('/favicon.png', origin).href,
+      new URL('/apple-touch-icon.png', origin).href,
+      `https://icons.duckduckgo.com/ip3/${origin.hostname}.ico`,
+      `https://www.google.com/s2/favicons?sz=64&domain=${origin.hostname}`
+    ]) {
+      const bytes = await grab(url);
+      if (!bytes || bytes.length < 80) continue;
+      const mime = imageMime(bytes);
+      if (!mime) continue;
+      return (
+        `  <symbol id="${slug}" viewBox="0 0 64 64"><title>${escapeXml(service.name)}</title>` +
+        `<image width="64" height="64" preserveAspectRatio="xMidYMid meet" ` +
+        `href="data:${mime};base64,${bytes.toString('base64')}" /></symbol>`
+      );
+    }
+  }
+  return null;
+}
 
 let sprite = readFileSync(spritePath, 'utf8');
+const present = new Set([...sprite.matchAll(/<symbol id="([^"]+)"/g)].map((match) => match[1]));
+
+// One representative service per slug, for the fetch fallback.
+const ownerBySlug = new Map();
+for (const service of services) if (!ownerBySlug.has(service.icon)) ownerBySlug.set(service.icon, service);
+
 const added = [];
-const missing = [];
 const symbols = [];
+const failures = [];
 
-for (const [id, slug] of Object.entries(SYMBOLS)) {
-  const symbolId = `multiall-${id}`;
-  if (sprite.includes(`id="${symbolId}"`)) continue;
+for (const [slug, owner] of [...ownerBySlug].sort(([a], [b]) => a.localeCompare(b))) {
+  if (present.has(slug)) continue;
 
-  const icon = iconFor(slug);
-  if (!icon) {
-    missing.push(`${symbolId} (no simple-icons entry for "${slug}")`);
+  const icon = iconBySlug.get(slug);
+  if (icon) {
+    symbols.push(
+      `  <symbol id="${slug}" viewBox="0 0 24 24" fill="#${icon.hex}">` +
+      `<title>${escapeXml(icon.title)}</title><path d="${icon.path}" /></symbol>`
+    );
+    added.push(`${slug} (simple-icons)`);
     continue;
   }
 
-  symbols.push(
-    `  <symbol id="${symbolId}" viewBox="0 0 24 24" fill="#${icon.hex}">` +
-    `<title>${escapeXml(icon.title)}</title><path d="${icon.path}" /></symbol>`
-  );
-  added.push(symbolId);
+  const fetched = await fetchMark(slug, owner);
+  if (fetched) {
+    symbols.push(fetched);
+    added.push(`${slug} (${owner.name}'s own mark)`);
+    continue;
+  }
+  failures.push(`${slug}: no simple-icons entry and ${owner.name} exposes no usable mark`);
+}
+
+if (failures.length) {
+  console.error(`cannot resolve ${failures.length} icon(s):\n${failures.join('\n')}`);
+  process.exit(1);
 }
 
 if (symbols.length) {
@@ -333,15 +272,22 @@ if (symbols.length) {
 // Keep the precompressed copy in step, or production would serve a stale sprite.
 writeFileSync(
   `${spritePath}.br`,
-  brotliCompressSync(readFileSync(spritePath), {
-    params: { [constants.BROTLI_PARAM_QUALITY]: 11 }
-  })
+  brotliCompressSync(readFileSync(spritePath), { params: { [constants.BROTLI_PARAM_QUALITY]: 11 } })
 );
 
-writeFileSync(tonesPath, buildTones(sprite));
+const rasterIds = new Set(
+  [...sprite.matchAll(/<symbol id="([^"]+)"[\s\S]*?<\/symbol>/g)]
+    .filter((match) => match[0].includes('<image') || match[0].includes('data:image'))
+    .map((match) => match[1])
+);
+writeFileSync(rasterPath, buildRaster(rasterIds));
+writeFileSync(tonesPath, buildTones(sprite, rasterIds));
 
-
+const orphans = [...present].filter((id) => !ownerBySlug.has(id));
 const total = (sprite.match(/<symbol /g) ?? []).length;
-console.log(`added ${added.length} symbol(s); sprite now has ${total}`);
-if (added.length) console.log(added.join(', '));
-if (missing.length) console.log(`skipped:\n${missing.join('\n')}`);
+console.log(
+  `added ${added.length} symbol(s); sprite now has ${total} ` +
+  `(${total - rasterIds.size} vector, ${rasterIds.size} raster)`
+);
+if (added.length) console.log(added.join('\n'));
+if (orphans.length) console.log(`unreferenced symbol(s) safe to delete:\n${orphans.join(', ')}`);

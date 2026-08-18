@@ -14,7 +14,7 @@ pnpm run dev
 ## Comprobaciones
 
 ```bash
-pnpm run test     # checks de bang/tokenizers y calculadora
+pnpm run test     # checks del catálogo, bang/tokenizers y calculadora
 pnpm run check    # svelte-check
 pnpm run build
 pnpm run preview
@@ -54,9 +54,15 @@ No se pide la ubicación al cargar la página. Al abrir la aplicación el clima 
 
 ## Recursos locales
 
-No se hacen solicitudes a servidores de fuentes ni de iconos. DM Sans, Space Grotesk, Symbols Nerd Font y Noto Color Emoji se sirven desde el proyecto; los iconos de servicios viven en un único sprite, `public/assets/icons.svg`.
+En tiempo de ejecución no se hacen solicitudes a servidores de fuentes ni de iconos. DM Sans, Space Grotesk, Symbols Nerd Font y Noto Color Emoji se sirven desde el proyecto; los iconos de servicios viven en un único sprite, `public/assets/icons.svg`.
 
-El sprite se regenera con `pnpm run icons`, que toma las marcas de [simple-icons](https://github.com/simple-icons/simple-icons) (CC0-1.0) según el mapa de `scripts/generate-icons.mjs` y actualiza también la copia Brotli. Es idempotente: los símbolos ya presentes no se tocan. Los servicios sin un icono fiable disponible (Yandex, Amazon, Lycos, Marginalia, DevDocs, Wiktionary) muestran sus iniciales en lugar de tomar prestada la marca de otro.
+Una sola regla sostiene toda la carga de iconos: el campo `icon` de un servicio es el id de un `<symbol>` del sprite, y ese id es el slug del servicio sin ningún prefijo. Los servicios de una misma marca comparten símbolo, así que 500 servicios usan 490 símbolos. `src/lib/icon.js` es el único módulo que lo resuelve (`iconHref`, `iconTone` e `iconIsRaster`); no hay resolución por servicio ni monogramas de letras.
+
+Que una marca sea vectorial o un mapa de bits incrustado es una propiedad del sprite, no del catálogo: se genera en `src/data/iconRaster.js` y `src/data/iconTones.js` leyendo el sprite terminado, de modo que no puede desincronizarse como sí ocurría con un campo `raster` escrito a mano en cada servicio.
+
+El sprite se regenera con `pnpm run icons`, que resuelve cada marca que falte en este orden: [simple-icons](https://github.com/simple-icons/simple-icons) (CC0-1.0), el `favicon.svg` del propio sitio cuando es vectorial de verdad, y por último su favicon ráster incrustado sin pérdida. Si nada de eso da resultado, el comando falla en lugar de dejar un hueco. También actualiza la copia Brotli y avisa de los símbolos que ya no usa ningún servicio. Es idempotente: los símbolos ya presentes no se tocan.
+
+De los 490 símbolos, 411 son vectoriales y 79 llevan un favicon ráster porque esa marca no existe en vectorial: simple-icons ha retirado muchas (Amazon, LinkedIn, Nature, Walmart y otras) y esos sitios no publican SVG. La comprobación del catálogo exige que los vectoriales sigan siendo más del 75 %.
 
 `public/assets/icons.svg.br` es una copia Brotli del sprite. `vite.config.js` la entrega bajo la URL canónica `icons.svg` cuando el navegador admite Brotli, durante `dev` y `preview`. En otro servidor hay que habilitar el equivalente para archivos precomprimidos (por ejemplo `brotli_static on;` en Nginx) manteniendo `icons.svg` como fallback. No enlaces `.br` directamente desde `<use>`.
 

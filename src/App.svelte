@@ -275,6 +275,8 @@
   <div class="background-shade" style:opacity={preferences.backgroundShade / 100}></div>
 {/if}
 
+<!-- Knocks the white background out of the embedded-bitmap marks listed in
+     src/data/iconRaster.js, so they sit on the icon shell like the vector ones. -->
 <svg class="svg-filters" aria-hidden="true" width="0" height="0">
   <defs>
     <filter id="remove-white-background" color-interpolation-filters="sRGB">
